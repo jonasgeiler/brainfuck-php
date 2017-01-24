@@ -23,8 +23,6 @@
  * - memoverflow (what the interpreter should do if the memory cell reaches the maximum cellsize) => either 1 (nothing), 2 (wrap) or 3 (abort)
  * - inputmode (the way the interpreter gets input. The difference is explained at the get_input()-function) => either "string" or "char"
  *
- * - Examples -
- * Examples are located in the examples folder.
  * 
  * @license https://github.com/Skayo/Brainfuck-Interpreter-PHP/blob/master/LICENSE MIT
  * @link https://github.com/Skayo/Brainfuck-Interpreter-PHP
