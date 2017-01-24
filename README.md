@@ -1,5 +1,5 @@
 # Brainfuck-Interpreter-PHP
-A Brainfuck Interpreter written in PHP.
+A Brainfuck Interpreter written in PHP.  
 Look into the main.php file for help.
 
 ## Requirements
