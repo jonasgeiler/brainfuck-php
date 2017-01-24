@@ -10,7 +10,7 @@ Look into the main.php file for help.
 <?php
 include("path/to/main.php");
 
-$file = "Example.bf";
+$file = "path/to/HelloWorldExample.bf";
 $config = [
   "cellsize" => 8/* bit */, 
   "infinitememory" => false, 
