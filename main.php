@@ -59,10 +59,6 @@ class BFI {
 			if(!isset($this->config[$confKey])) // if the config is not set...
 				$this->config[$confKey] = $confVal; // ...set it
 		}
-
-		if($this->config["infinitememory"] && "memoverflow" == 2){ // if you use Memory-Overflow Wrap and Infinte Memory together...
-			error("Config Error: Can't use Infinite Memory and Wrap Memory-Overflow together.");  // throw an error (not possible)
-		}
 	}
 
 	private function setVars() {
@@ -270,7 +266,7 @@ class BFI {
 		
 		if($this->config["inputmode"] == "string"){ // if inputmode "string" is configured
 			if(count($this->input_queue) == 0){ // if nothing is in the input queue...
-				$input = readline_info(readline()); // ...get input from user...
+				$input = readline(""); // ...get input from user...
 				$input = str_split($input); // ...split it into chars...
 				foreach ($input as $char) {
 					array_push($this->input_queue, $char); // ...and add every char to the queue.
@@ -279,9 +275,9 @@ class BFI {
 
 			return array_shift($this->input_queue);
 		} elseif($this->config["inputmode"] == "char") { // if inputmode "string" is configured
-			$input = readline_info(readline()); // get input from user
+			$input = readline(""); // get input from user
 			while(strlen($input) > 1){	// while input is not a single char...
-				$input = readline_info(readline()); // ...get input from user again
+				$input = readline(""); // ...get input from user again
 			}
 
 			return $input;
