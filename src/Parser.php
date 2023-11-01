@@ -220,6 +220,7 @@ class Parser {
 					}
 
 					$instruction->opcode = Opcode::Output;
+					$instruction->amount = null;
 					break;
 
 				case BRAINFUCK_CHAR_COMMA:
@@ -239,6 +240,7 @@ class Parser {
 					}
 
 					$instruction->opcode = Opcode::Input;
+					$instruction->amount = null;
 					break;
 
 				default:

@@ -2,17 +2,17 @@
     "name": "jonasgeiler/brainfuck",
     "description": "A brainfuck interpreter written in PHP",
     "type": "project",
-    "homepage": "https://github.com/skayo/brainfuck-php#readme",
+    "homepage": "https://github.com/jonasgeiler/brainfuck-php#readme",
     "license": "MIT",
     "authors": [
         {
             "name": "Jonas Geiler",
             "email": "composer@jonasgeiler.com",
-            "homepage": "https://skayo.dev"
+            "homepage": "https://jonasgeiler.com"
         }
     ],
     "support": {
-        "issues": "https://github.com/skayo/brainfuck-php/issues"
+        "issues": "https://github.com/jonasgeiler/brainfuck-php/issues"
     },
     "require": {
         "php": ">=8.2"
