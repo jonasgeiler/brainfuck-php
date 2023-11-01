@@ -45,5 +45,15 @@ if (!defined('COMPOSER_AUTOLOAD_PATH')) {
 
 require COMPOSER_AUTOLOAD_PATH;
 
-$fp = fopen($argv[1], 'r');
-\Brainfuck\BrainfuckInterpreter::interpret($fp);
+//$fp = fopen($argv[1], 'r');
+//\Brainfuck\BrainfuckInterpreter::interpret($fp);
+
+//$program = file_get_contents(__DIR__ . '/../examples/gameoflife.bf');
+$program = '>><<';
+$root = \Brainfuck\Parser::parse($program);
+var_dump($root);
+$i = $root;
+while ($i !== null) {
+    echo $i . PHP_EOL;
+    $i = $i->next;
+}

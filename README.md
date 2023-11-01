@@ -2,7 +2,7 @@
 A brainfuck interpreter written in PHP.
 
 ## Requirements
-- PHP >= 7.4
+- PHP >= 8.2
 
 ## Usage
 ```bash

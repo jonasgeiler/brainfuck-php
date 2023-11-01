@@ -5,7 +5,7 @@ namespace Brainfuck;
 /**
  * Represents a brainfuck interpreter.
  */
-class BrainfuckInterpreter {
+class Interpreter {
 
 	/**
 	 * Interpret given brainfuck code from a file or resource.
