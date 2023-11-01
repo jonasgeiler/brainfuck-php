@@ -2,6 +2,7 @@
 
 namespace Brainfuck;
 
+// Defaults
 const DEFAULT_TAPE_SIZE = 30_000;
 const DEFAULT_CELL_SIZE = 255;
 

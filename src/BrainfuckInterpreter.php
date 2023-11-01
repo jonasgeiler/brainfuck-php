@@ -2,8 +2,17 @@
 
 namespace Brainfuck;
 
+/**
+ * Represents a brainfuck interpreter.
+ */
 class BrainfuckInterpreter {
 
+	/**
+	 * Interpret given brainfuck code from a file or resource.
+	 * @param resource $programStream The file handler returned from `fopen()` or something similar.
+	 * @param int $tapeSize The size of the tape.
+	 * @param int $cellSize The maximum size of a cell in the tape.
+	 */
 	static public function interpret(
 		$programStream,
 		$tapeSize = DEFAULT_TAPE_SIZE,
