@@ -14,10 +14,10 @@ class BrainfuckInterpreter {
 		$instructionsCount = 0;
 		while (($char = fgetc($programStream)) !== false) {
 			if (
-				$char !== OP_PLUS
-				&& $char !== OP_MINUS
-				&& $char !== OP_RIGHT
-				&& $char !== OP_LEFT
+				$char !== OP_POINTER_INCREASE
+				&& $char !== OP_POINTER_DECREASE
+				&& $char !== OP_POINTER_RIGHT
+				&& $char !== OP_POINTER_LEFT
 				&& $char !== OP_INPUT
 				&& $char !== OP_OUTPUT
 				&& $char !== OP_LOOP_START
@@ -29,10 +29,10 @@ class BrainfuckInterpreter {
 			if (
 				$instructionsCount
 				&& (
-					$char === OP_PLUS
-					|| $char === OP_MINUS
-					|| $char === OP_RIGHT
-					|| $char === OP_LEFT
+					$char === OP_POINTER_INCREASE
+					|| $char === OP_POINTER_DECREASE
+					|| $char === OP_POINTER_RIGHT
+					|| $char === OP_POINTER_LEFT
 				)
 				&& $instructions[$instructionsCount - 1][0] === $char
 			) {
@@ -71,28 +71,28 @@ class BrainfuckInterpreter {
 		$tapePointer = 0;
 		while ($instructionsPointer < $instructionsCount) {
 			switch ($instructions[$instructionsPointer][0]) {
-				case OP_PLUS:
+				case OP_POINTER_INCREASE:
 					$tape[$tapePointer] += $instructions[$instructionsPointer][1];
 					if ($tape[$tapePointer] > $cellSize) {
 						$tape[$tapePointer] -= $cellSize + 1;
 					}
 					break;
 
-				case OP_MINUS:
+				case OP_POINTER_DECREASE:
 					$tape[$tapePointer] -= $instructions[$instructionsPointer][1];
 					if ($tape[$tapePointer] < 0) {
 						$tape[$tapePointer] += $cellSize + 1;
 					}
 					break;
 
-				case OP_RIGHT:
+				case OP_POINTER_RIGHT:
 					$tapePointer += $instructions[$instructionsPointer][1];
 					if ($tapePointer >= $tapeSize) {
 						throw new \Error('Tape pointer overflow');
 					}
 					break;
 
-				case OP_LEFT:
+				case OP_POINTER_LEFT:
 					$tapePointer -= $instructions[$instructionsPointer][1];
 					if ($tapePointer < 0) {
 						throw new \Error('Tape pointer underflow');
