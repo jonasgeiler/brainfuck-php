@@ -1,0 +1,41 @@
+{
+    "name": "jonasgeiler/brainfuck",
+    "description": "A brainfuck interpreter written in PHP",
+    "type": "project",
+    "homepage": "https://github.com/skayo/brainfuck-php#readme",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jonas Geiler",
+            "email": "composer@jonasgeiler.com",
+            "homepage": "https://skayo.dev"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/skayo/brainfuck-php/issues"
+    },
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brainfuck\\": "src/"
+        },
+        "files": [
+            "src/constants.php"
+        ]
+    },
+    "bin": [
+        "bin/bfi.php"
+    ],
+    "prefer-stable": true,
+    "keywords": [
+        "experiment",
+        "brainfuck",
+        "interpreter",
+        "brainfuck-interpreter"
+    ]
+}
