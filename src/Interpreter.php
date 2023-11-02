@@ -8,107 +8,79 @@ namespace Brainfuck;
 class Interpreter {
 
 	/**
-	 * Interpret given brainfuck code from a file or resource.
-	 * @param resource $programStream The file handler returned from `fopen()` or something similar.
-	 * @param int $tapeSize The size of the tape.
-	 * @param int $cellSize The maximum size of a cell in the tape.
+	 * Interpret a given brainfuck instruction linked list.
+	 * @param \Brainfuck\Instruction $rootInstruction The start of the linked
+	 *     list.
 	 */
 	static public function interpret(
-		$programStream,
-		$tapeSize = DEFAULT_TAPE_SIZE,
-		$cellSize = DEFAULT_CELL_SIZE
+		Instruction $rootInstruction,
+		Size $tapeSize = Size::Bit16,
+		Size $cellSize = Size::Bit8,
 	) {
-		// Create an array of optimized instructions from the program stream
-		$instructions = [];
-		$instructionsCount = 0;
-		while (($char = fgetc($programStream)) !== false) {
-			if (
-				$char !== OP_POINTER_INCREASE
-				&& $char !== OP_POINTER_DECREASE
-				&& $char !== OP_POINTER_RIGHT
-				&& $char !== OP_POINTER_LEFT
-				&& $char !== OP_INPUT
-				&& $char !== OP_OUTPUT
-				&& $char !== OP_LOOP_START
-				&& $char !== OP_LOOP_END
-			) {
-				continue;
-			}
-
-			if (
-				$instructionsCount
-				&& (
-					$char === OP_POINTER_INCREASE
-					|| $char === OP_POINTER_DECREASE
-					|| $char === OP_POINTER_RIGHT
-					|| $char === OP_POINTER_LEFT
-				)
-				&& $instructions[$instructionsCount - 1][0] === $char
-			) {
-				$instructions[$instructionsCount - 1][1]++;
-			} else {
-				$instructions[$instructionsCount++] = [ $char, 1 ];
-			}
-		}
-
-		// Go through the instructions and find all the loops
-		$stack = [];
-		$stackPointer = 0;
-		$matches = [];
-		for ($i = 0; $i < $instructionsCount; $i++) {
-			if ($instructions[$i][0] === OP_LOOP_START) {
-				$stack[$stackPointer++] = $i;
-			}
-
-			if ($instructions[$i][0] === OP_LOOP_END) {
-				if ($stackPointer === 0) {
-					throw new \Error('Unmatched ]');
-				}
-
-				$result = $stack[--$stackPointer];
-				$matches[$result] = $i;
-				$matches[$i] = $result;
-			}
-		}
-		if ($stackPointer !== 0) {
-			throw new \Error('Unmatched [');
-		}
+		$tapeSize = $tapeSize->value;
+		$cellSize = $cellSize->value;
 
 		// Execute the instructions
-		$instructionsPointer = 0;
+		$instruction = $rootInstruction;
 		$tape = array_fill(0, $tapeSize, 0);
 		$tapePointer = 0;
-		while ($instructionsPointer < $instructionsCount) {
-			switch ($instructions[$instructionsPointer][0]) {
-				case OP_POINTER_INCREASE:
-					$tape[$tapePointer] += $instructions[$instructionsPointer][1];
-					if ($tape[$tapePointer] > $cellSize) {
-						$tape[$tapePointer] -= $cellSize + 1;
+		while ($instruction !== null) {
+			switch ($instruction->opcode) {
+				case Opcode::Jump:
+					if ($instruction->amount < 0) {
+						$tapePointer = (
+							(
+								$tapePointer
+								- (abs($instruction->amount) & $tapeSize)
+							)
+							& $tapeSize
+						);
+					} else {
+						$tapePointer = (
+							(
+								$tapePointer
+								+ ($instruction->amount & $tapeSize)
+							)
+							& $tapeSize
+						);
 					}
 					break;
 
-				case OP_POINTER_DECREASE:
-					$tape[$tapePointer] -= $instructions[$instructionsPointer][1];
-					if ($tape[$tapePointer] < 0) {
-						$tape[$tapePointer] += $cellSize + 1;
+				case Opcode::Add:
+					if ($instruction->amount < 0) {
+						$tape[$tapePointer] = (
+							(
+								$tape[$tapePointer]
+								- (abs($instruction->amount) & $cellSize)
+							)
+							& $cellSize
+						);
+					} else {
+						$tape[$tapePointer] = (
+							(
+								$tape[$tapePointer]
+								+ ($instruction->amount & $cellSize)
+							)
+							& $cellSize
+						);
 					}
 					break;
 
-				case OP_POINTER_RIGHT:
-					$tapePointer += $instructions[$instructionsPointer][1];
-					if ($tapePointer >= $tapeSize) {
-						throw new \Error('Tape pointer overflow');
+				case Opcode::LoopStart:
+					if ($tape[$tapePointer] === 0) {
+						$instruction = $instruction->match->next;
+						continue 2;
 					}
 					break;
 
-				case OP_POINTER_LEFT:
-					$tapePointer -= $instructions[$instructionsPointer][1];
-					if ($tapePointer < 0) {
-						throw new \Error('Tape pointer underflow');
+				case Opcode::LoopEnd:
+					if ($tape[$tapePointer] !== 0) {
+						$instruction = $instruction->match->next;
+						continue 2;
 					}
 					break;
 
-				case OP_INPUT:
+				case Opcode::Input:
 					if (($input = fgetc(STDIN)) === false) {
 						throw new \Error('Input failed');
 					}
@@ -121,7 +93,7 @@ class Interpreter {
 					$tape[$tapePointer] = $input;
 					break;
 
-				case OP_OUTPUT:
+				case Opcode::Output:
 					$output = $tape[$tapePointer];
 					if ($output === 10) {
 						$output = PHP_EOL;
@@ -134,23 +106,23 @@ class Interpreter {
 					}
 					break;
 
-				case OP_LOOP_START:
-					if ($tape[$tapePointer] === 0) {
-						$instructionsPointer = $matches[$instructionsPointer];
-					}
+				case Opcode::Clear:
+					throw new \Exception('To be implemented');
 					break;
-
-				case OP_LOOP_END:
-					if ($tape[$tapePointer] !== 0) {
-						$instructionsPointer = $matches[$instructionsPointer];
-					}
+				case Opcode::Copy:
+					throw new \Exception('To be implemented');
 					break;
-
+				case Opcode::ScanLeft:
+					throw new \Exception('To be implemented');
+					break;
+				case Opcode::ScanRight:
+					throw new \Exception('To be implemented');
+					break;
 				default:
-					throw new \Error('Unknown instruction');
+					throw new \Exception('Unknown opcode');
 			}
 
-			$instructionsPointer++;
+			$instruction = $instruction->next;
 		}
 	}
 }

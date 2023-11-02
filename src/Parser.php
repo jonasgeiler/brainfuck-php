@@ -2,33 +2,6 @@
 
 namespace Brainfuck;
 
-// If someone wants to define a custom brainfuck derivative that works the same
-// as brainfuck, they can overwrite these constants with custom characters.
-if (!defined('BRAINFUCK_CHAR_GT')) {
-	define('BRAINFUCK_CHAR_GT', '>');
-}
-if (!defined('BRAINFUCK_CHAR_LT')) {
-	define('BRAINFUCK_CHAR_LT', '<');
-}
-if (!defined('BRAINFUCK_CHAR_PLUS')) {
-	define('BRAINFUCK_CHAR_PLUS', '+');
-}
-if (!defined('BRAINFUCK_CHAR_MINUS')) {
-	define('BRAINFUCK_CHAR_MINUS', '-');
-}
-if (!defined('BRAINFUCK_CHAR_LSQB')) {
-	define('BRAINFUCK_CHAR_LSQB', '[');
-}
-if (!defined('BRAINFUCK_CHAR_RSQB')) {
-	define('BRAINFUCK_CHAR_RSQB', ']');
-}
-if (!defined('BRAINFUCK_CHAR_PERIOD')) {
-	define('BRAINFUCK_CHAR_PERIOD', '.');
-}
-if (!defined('BRAINFUCK_CHAR_COMMA')) {
-	define('BRAINFUCK_CHAR_COMMA', ',');
-}
-
 /**
  * Parses brainfuck programs and converts them into an optimized and
  * interpretable set of instructions.
@@ -38,15 +11,27 @@ class Parser {
 	/**
 	 * Parse a given brainfuck program.
 	 * @param string $program The brainfuck program to parse.
+	 * @throws \Exception
 	 */
-	static public function parse(string &$program): ?Instruction {
+	static public function parse(
+		string &$program,
+		string $opJumpRight = '>',
+		string $opJumpLeft = '<',
+		string $opAddIncrease = '+',
+		string $opAddDecrease = '-',
+		string $opLoopStart = '[',
+		string $opLoopEnd = ']',
+		string $opOutput = '.',
+		string $opInput = ',',
+	): ?Instruction {
 		$rootInstruction = new Instruction();
 
 		$programLength = strlen($program);
 		$instruction = $rootInstruction;
+		$loopStack = [];
 		for ($pi = 0; $pi < $programLength; $pi++) {
 			switch ($program[$pi]) {
-				case BRAINFUCK_CHAR_GT:
+				case $opJumpRight:
 					// This makes sure to go back to the previous instruction if the
 					// current one is a 'add 0' instruction, which doesn't do anything.
 					if (
@@ -100,7 +85,7 @@ class Parser {
 					}
 					break;
 
-				case BRAINFUCK_CHAR_LT:
+				case $opJumpLeft:
 					if (
 						$instruction->opcode === Opcode::Add
 						&& $instruction->amount === 0
@@ -133,7 +118,7 @@ class Parser {
 					}
 					break;
 
-				case BRAINFUCK_CHAR_PLUS:
+				case $opAddIncrease:
 					if (
 						$instruction->opcode === Opcode::Jump
 						&& $instruction->amount === 0
@@ -166,7 +151,7 @@ class Parser {
 					}
 					break;
 
-				case BRAINFUCK_CHAR_MINUS:
+				case $opAddDecrease:
 					if (
 						$instruction->opcode === Opcode::Jump
 						&& $instruction->amount === 0
@@ -199,11 +184,64 @@ class Parser {
 					}
 					break;
 
-				case BRAINFUCK_CHAR_LSQB:
-				case BRAINFUCK_CHAR_RSQB:
+				case $opLoopStart:
+					if (
+						$instruction->opcode !== null
+						&& (
+							(
+								$instruction->opcode !== Opcode::Jump
+								&& $instruction->opcode !== Opcode::Add
+							)
+							|| $instruction->amount !== 0
+						)
+					) {
+						$instruction->next = new Instruction();
+						$instruction->next->previous = $instruction;
+						$instruction = $instruction->next;
+					}
+
+					$instruction->opcode = Opcode::LoopStart;
+					$instruction->amount = null;
+
+					// Just add the current instruction to the loop stack.
+					$loopStack[] = $instruction;
 					break;
 
-				case BRAINFUCK_CHAR_PERIOD:
+				case $opLoopEnd:
+					// Check if the loop stack is currently empty, which means
+					// there are too many ']' in the program:
+					if (count($loopStack) === 0) {
+						// Throw a syntax error.
+						throw new \Exception('Unmatched ]'); // TODO: Use custom error
+					}
+
+					// TODO: Skip if empty loop
+
+					if (
+						$instruction->opcode !== null
+						&& (
+							(
+								$instruction->opcode !== Opcode::Jump
+								&& $instruction->opcode !== Opcode::Add
+							)
+							|| $instruction->amount !== 0
+						)
+					) {
+						$instruction->next = new Instruction();
+						$instruction->next->previous = $instruction;
+						$instruction = $instruction->next;
+					}
+
+					$instruction->opcode = Opcode::LoopEnd;
+					$instruction->amount = null;
+
+					// Get the last item of the loop stack, which should be the
+					// matching LoopStart instruction, and then create a link.
+					$instruction->match = array_pop($loopStack);
+					$instruction->match->match = $instruction;
+					break;
+
+				case $opOutput:
 					if (
 						$instruction->opcode !== null
 						&& (
@@ -223,7 +261,7 @@ class Parser {
 					$instruction->amount = null;
 					break;
 
-				case BRAINFUCK_CHAR_COMMA:
+				case $opInput:
 					if (
 						$instruction->opcode !== null
 						&& (
@@ -246,6 +284,13 @@ class Parser {
 				default:
 					continue 2;
 			}
+		}
+
+		// Check if the loop stack is not empty after parsing, which means
+		// there are too many '[' in the program:
+		if (count($loopStack) !== 0) {
+			// Throw a syntax error.
+			throw new \Exception('Unmatched [');
 		}
 
 		// Check if the root instruction is empty:

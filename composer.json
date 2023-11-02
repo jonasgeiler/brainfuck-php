@@ -23,13 +23,10 @@
     "autoload": {
         "psr-4": {
             "Brainfuck\\": "src/"
-        },
-        "files": [
-            "src/constants.php"
-        ]
+        }
     },
     "bin": [
-        "bin/bfi.php"
+        "bin/bfi"
     ],
     "prefer-stable": true,
     "keywords": [

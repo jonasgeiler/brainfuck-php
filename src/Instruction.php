@@ -42,6 +42,31 @@ class Instruction {
 		if ($this->amount) {
 			$result .= ' ' . $this->amount;
 		}
+		if ($this->match) {
+			$result .=
+				' => '
+				. strtolower($this->match->opcode->name);
+
+			if (
+				$this->match->next !== null
+				&& $this->match->next->opcode !== Opcode::LoopStart
+				&& $this->match->next->opcode !== Opcode::LoopEnd
+			) {
+				$result .= ', ' . $this->match->next;
+
+				if (
+					$this->match->next->next !== null
+					&& $this->match->next->next->opcode !== Opcode::LoopStart
+					&& $this->match->next->next->opcode !== Opcode::LoopEnd
+				) {
+					$result .= ', ' . $this->match->next->next;
+
+					if ($this->match->next->next->next !== null) {
+						$result .= ', ...';
+					}
+				}
+			}
+		}
 
 		return $result;
 	}
