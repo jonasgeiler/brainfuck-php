@@ -49,14 +49,15 @@ $program = file_get_contents($argv[1]);
 //$program = '+++<+--+>+++--<+>--<->--';
 
 $rootInstruction = \Brainfuck\Parser::parse($program);
+
+//var_dump($rootInstruction);
 /*
-var_dump($rootInstruction);
 $i = $rootInstruction;
 while ($i !== null) {
     echo $i . PHP_EOL;
     $i = $i->next;
 }
 */
-\Brainfuck\Interpreter::interpret($rootInstruction);
 
+\Brainfuck\Interpreter::interpret($rootInstruction);
 //\Brainfuck\OldInterpreter::interpret($program);

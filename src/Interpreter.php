@@ -16,6 +16,7 @@ class Interpreter {
 		Instruction $rootInstruction,
 		Size $tapeSize = Size::Bit16,
 		Size $cellSize = Size::Bit8,
+		EofBehavior $eofBehavior = EofBehavior::Ignore,
 	) {
 		$tapeSize = $tapeSize->value;
 		$cellSize = $cellSize->value;
@@ -81,16 +82,18 @@ class Interpreter {
 					break;
 
 				case Opcode::Input:
-					if (($input = fgetc(STDIN)) === false) {
-						throw new \Error('Input failed');
-					}
+					$input = fgetc(STDIN);
+					if ($input === false) { // Input is EOF
+						if ($eofBehavior === EofBehavior::Ignore) {
+							break;
+						}
 
-					if ($input === PHP_EOL) {
-						$input = 10;
+						$tape[$tapePointer] = $eofBehavior->value;
+					} elseif ($input === PHP_EOL) { // Input is newline
+						$tape[$tapePointer] = 10; // 10 is the ASCII code for \n
 					} else {
-						$input = ord($input);
+						$tape[$tapePointer] = ord($input);
 					}
-					$tape[$tapePointer] = $input;
 					break;
 
 				case Opcode::Output:
@@ -100,7 +103,6 @@ class Interpreter {
 					} else {
 						$output = chr($output);
 					}
-
 					if (fputs(STDOUT, $output) === false) {
 						throw new \Error('Output failed');
 					}
