@@ -80,14 +80,17 @@ class Parser {
 
 				case $opLoopEnd:
 					if (empty($loopStartStack)) {
-						// TODO: Use custom error
+						// TODO: Use custom error (InvalidSyntaxException or SyntaxException?)
 						throw new \Exception('Unmatched ]');
 					}
 
-					// TODO: Skip if empty loop
 					self::initInstruction($instruction, Opcode::LoopEnd);
 					$instruction->match = array_pop($loopStartStack);
 					$instruction->match->match = $instruction;
+					// TODO: Error if empty loop (eg. []) (EmptyLoopException or SyntaxException?)
+					// TODO: Detect scan loops (eg. [<] or [>])
+					// TODO: Detect clear loops (eg. [-] or [+])
+					// TODO: Detect copy loops? (eg. [->+<] ???)
 					break;
 
 				case $opOutput:
