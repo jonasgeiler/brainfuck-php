@@ -109,18 +109,29 @@ class Interpreter {
 					break;
 
 				case Opcode::Clear:
-					throw new \Exception('To be implemented');
+					$tape[$tapePointer] = 0;
 					break;
+
 				case Opcode::Copy:
 					throw new \Exception('To be implemented');
 					break;
-				case Opcode::ScanLeft:
-					throw new \Exception('To be implemented');
-					break;
+
 				case Opcode::ScanRight:
-					throw new \Exception('To be implemented');
+				case Opcode::ScanLeft:
+					$dir = $instruction->opcode === Opcode::ScanRight ? 1 : -1;
+					$oldTapePointer = $tapePointer;
+					while ($tape[$tapePointer] !== 0) {
+						$tapePointer = ($tapePointer + $dir) & $tapeSize;
+
+						if ($tapePointer === $oldTapePointer) {
+							// TODO: Use custom error (InfiniteLoopException or SyntaxException?)
+							throw new \Exception('Infinite loop detected');
+						}
+					}
 					break;
+
 				default:
+					// TODO: Use custom error (UnknownOpcodeException or SyntaxException?)
 					throw new \Exception('Unknown opcode');
 			}
 
