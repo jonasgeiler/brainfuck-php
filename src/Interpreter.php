@@ -23,7 +23,6 @@ class Interpreter {
 
 		// Execute the instructions
 		$instruction = $rootInstruction;
-		// TODO: Use SplFixedArray?
 		$tape = array_fill(0, $tapeSize, 0);
 		$tapePointer = 0;
 		while ($instruction !== null) {
