@@ -95,9 +95,12 @@ class Parser {
 								|| $instruction->previous->amount === -1
 							)
 						) {
-							// TODO: Overwrite previous add instruction, since
-							//  it wouldn't do anything because of the clear.
-							$instruction = $instruction->match;
+							if ($instruction->match->previous->opcode === Opcode::Add) {
+								$instruction = $instruction->match->previous;
+							} else {
+								$instruction = $instruction->match;
+							}
+
 							$instruction->opcode = Opcode::Clear;
 							$instruction->amount = null;
 							$instruction->next = null;
