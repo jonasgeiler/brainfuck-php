@@ -40,8 +40,8 @@ class Parser {
 					$amountDiff = $op === $opJumpRight ? 1 : -1;
 					if (
 						$instruction->opcode === Opcode::Jump
-						&& $instruction->amount + $amountDiff <= PHP_INT_MAX
-						&& $instruction->amount + $amountDiff > PHP_INT_MIN
+						&& $instruction->amount + $amountDiff < PHP_INT_MAX
+						&& $instruction->amount + $amountDiff > PHP_INT_MIN + 1
 					) {
 						$instruction->amount += $amountDiff;
 					} else {
@@ -60,8 +60,8 @@ class Parser {
 					$amountDiff = $op === $opAddIncrease ? 1 : -1;
 					if (
 						$instruction->opcode === Opcode::Add
-						&& $instruction->amount + $amountDiff <= PHP_INT_MAX
-						&& $instruction->amount + $amountDiff > PHP_INT_MIN
+						&& $instruction->amount + $amountDiff < PHP_INT_MAX
+						&& $instruction->amount + $amountDiff > PHP_INT_MIN + 1
 					) {
 						$instruction->amount += $amountDiff;
 					} else {
