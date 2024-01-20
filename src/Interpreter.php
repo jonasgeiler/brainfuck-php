@@ -23,7 +23,7 @@ class Interpreter {
 
 		// Execute the instructions
 		$instruction = $rootInstruction;
-		$tape = array_fill(0, $tapeSize, 0);
+		$tape = array_fill(0, $tapeSize + 1, 0);
 		$tapePointer = 0;
 		while ($instruction !== null) {
 			switch ($instruction->opcode) {
@@ -112,10 +112,6 @@ class Interpreter {
 					$tape[$tapePointer] = 0;
 					break;
 
-				case Opcode::Copy:
-					throw new \Exception('To be implemented');
-					break;
-
 				case Opcode::ScanRight:
 				case Opcode::ScanLeft:
 					$dir = $instruction->opcode === Opcode::ScanRight ? 1 : -1;
@@ -129,6 +125,7 @@ class Interpreter {
 					}
 					break;
 
+				case Opcode::Copy:
 				default:
 					throw new Exceptions\UnknownOpcodeException();
 			}

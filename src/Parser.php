@@ -95,7 +95,10 @@ class Parser {
 								|| $instruction->previous->amount === -1
 							)
 						) {
-							if ($instruction->match->previous->opcode === Opcode::Add) {
+							if (
+								$instruction->match->previous !== null
+								&& $instruction->match->previous->opcode === Opcode::Add
+							) {
 								$instruction = $instruction->match->previous;
 							} else {
 								$instruction = $instruction->match;
@@ -182,10 +185,12 @@ class Parser {
 			&& (
 				(
 					$instruction->opcode === Opcode::Jump
+					&& $instruction->previous !== null
 					&& $instruction->previous->opcode === Opcode::Add
 				)
 				|| (
 					$instruction->opcode === Opcode::Add
+					&& $instruction->previous !== null
 					&& $instruction->previous->opcode === Opcode::Jump
 				)
 			)
