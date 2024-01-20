@@ -28,43 +28,23 @@ class Interpreter {
 		while ($instruction !== null) {
 			switch ($instruction->opcode) {
 				case Opcode::Jump:
-					if ($instruction->amount < 0) {
-						$tapePointer = (
-							(
-								$tapePointer
-								- (abs($instruction->amount) & $tapeSize)
-							)
-							& $tapeSize
-						);
-					} else {
-						$tapePointer = (
-							(
-								$tapePointer
-								+ ($instruction->amount & $tapeSize)
-							)
-							& $tapeSize
-						);
-					}
+					$tapePointer = wrap(
+						$tapePointer + wrap(
+							$instruction->amount,
+							$tapeSize,
+						),
+						$tapeSize,
+					);
 					break;
 
 				case Opcode::Add:
-					if ($instruction->amount < 0) {
-						$tape[$tapePointer] = (
-							(
-								$tape[$tapePointer]
-								- (abs($instruction->amount) & $cellSize)
-							)
-							& $cellSize
-						);
-					} else {
-						$tape[$tapePointer] = (
-							(
-								$tape[$tapePointer]
-								+ ($instruction->amount & $cellSize)
-							)
-							& $cellSize
-						);
-					}
+					$tape[$tapePointer] = wrap(
+						$tape[$tapePointer] + wrap(
+							$instruction->amount,
+							$cellSize,
+						),
+						$cellSize,
+					);
 					break;
 
 				case Opcode::LoopStart:
@@ -121,7 +101,7 @@ class Interpreter {
 					$dir = $instruction->opcode === Opcode::ScanRight ? 1 : -1;
 					$oldTapePointer = $tapePointer;
 					while ($tape[$tapePointer] !== 0) {
-						$tapePointer = ($tapePointer + $dir) & $tapeSize;
+						$tapePointer = wrap($tapePointer + $dir, $tapeSize);
 
 						if ($tapePointer === $oldTapePointer) {
 							// TODO: Use custom error (InfiniteLoopException or SyntaxException?)
