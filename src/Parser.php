@@ -80,16 +80,19 @@ class Parser {
 
 				case $opLoopEnd:
 					if (empty($loopStartStack)) {
-						// TODO: Use custom error (InvalidSyntaxException or SyntaxException?)
-						throw new \Exception('Unmatched ]');
+						throw new Exceptions\UnmatchedLoopEndException();
 					}
 
 					self::initInstruction($instruction, Opcode::LoopEnd);
 					$instruction->match = array_pop($loopStartStack);
 					$instruction->match->match = $instruction;
-					// TODO: Error if empty loop (eg. []) (EmptyLoopException or SyntaxException?)
-					// TODO: Detect scan loops (eg. [<] or [>])
+
+					if ($instruction->previous->opcode === Opcode::LoopStart) {
+						throw new Exceptions\InfiniteLoopException();
+					}
+
 					// TODO: Detect clear loops (eg. [-] or [+])
+					// TODO: Detect scan loops (eg. [<] or [>])
 					// TODO: Detect copy loops? (eg. [->+<] ???)
 					break;
 
@@ -107,7 +110,7 @@ class Parser {
 		// there are too many '[' in the program:
 		if (!empty($loopStartStack)) {
 			// Throw a syntax error.
-			throw new \Exception('Unmatched [');
+			throw new Exceptions\UnmatchedLoopStartException();
 		}
 
 		// Check if the root instruction is empty:

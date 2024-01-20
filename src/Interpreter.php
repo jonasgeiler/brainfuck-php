@@ -125,15 +125,13 @@ class Interpreter {
 						$tapePointer = ($tapePointer + $dir) & $tapeSize;
 
 						if ($tapePointer === $oldTapePointer) {
-							// TODO: Use custom error (InfiniteLoopException or SyntaxException?)
-							throw new \Exception('Infinite loop detected');
+							throw new Exceptions\InfiniteLoopException();
 						}
 					}
 					break;
 
 				default:
-					// TODO: Use custom error (UnknownOpcodeException or SyntaxException?)
-					throw new \Exception('Unknown opcode');
+					throw new Exceptions\UnknownOpcodeException();
 			}
 
 			$instruction = $instruction->next;
