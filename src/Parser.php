@@ -87,12 +87,42 @@ class Parser {
 					$instruction->match = array_pop($loopStartStack);
 					$instruction->match->match = $instruction;
 
-					if ($instruction->previous->opcode === Opcode::LoopStart) {
-						throw new Exceptions\InfiniteLoopException();
+					if ($instruction->match === $instruction->previous->previous) {
+						if (
+							$instruction->previous->opcode === Opcode::Add
+							&& (
+								$instruction->previous->amount === 1
+								|| $instruction->previous->amount === -1
+							)
+						) {
+							// TODO: Overwrite previous add instruction, since
+							//  it wouldn't do anything because of the clear.
+							$instruction = $instruction->match;
+							$instruction->opcode = Opcode::Clear;
+							$instruction->amount = null;
+							$instruction->next = null;
+							$instruction->match = null;
+						} else if (
+							$instruction->previous->opcode === Opcode::Jump
+							&& $instruction->previous->amount === 1
+						) {
+							$instruction = $instruction->match;
+							$instruction->opcode = Opcode::ScanRight;
+							$instruction->amount = null;
+							$instruction->next = null;
+							$instruction->match = null;
+						} else if (
+							$instruction->previous->opcode === Opcode::Jump
+							&& $instruction->previous->amount === -1
+						) {
+							$instruction = $instruction->match;
+							$instruction->opcode = Opcode::ScanLeft;
+							$instruction->amount = null;
+							$instruction->next = null;
+							$instruction->match = null;
+						}
 					}
 
-					// TODO: Detect clear loops (eg. [-] or [+])
-					// TODO: Detect scan loops (eg. [<] or [>])
 					// TODO: Detect copy loops? (eg. [->+<] ???)
 					break;
 
