@@ -26,7 +26,7 @@ Zend Engine v4.2.14, Copyright (c) Zend Technologies
     with Zend OPcache v8.2.14, Copyright (c), by Zend Technologies
 
 
-# Before using scan and clear opcodes (only basic optimization)
+# With only basic optimization like merging consecutive operators together:
 $ time ./bin/bf ./examples/hanoi.bf
 real    6m46,842s
 user    6m46,457s
@@ -38,7 +38,7 @@ user    3m25,067s
 sys     0m0,044s
 
 
-# After adding scan and clear opcodes
+# After adding the scan and clear opcodes:
 $ time ./bin/bf ./examples/hanoi.bf
 real    0m28,194s
 user    0m28,132s
@@ -50,7 +50,7 @@ user    0m15,665s
 sys     0m0,052s
 
 
-# After adding copy opcode
+# After adding the copy opcode:
 $ time ./bin/bf ./examples/hanoi.bf
 real    0m15,946s
 user    0m15,881s
@@ -62,3 +62,7 @@ user    0m9,296s
 sys     0m0,040s
 
 ```
+If the above is not clear: the `./examples/hanoi.bf` brainfuck program only
+takes **9 seconds** to run on my machine, which is pretty fast compared to where 
+this project started at and compared to other PHP brainfuck parsers & interpreters 
+I could find on the internet!
