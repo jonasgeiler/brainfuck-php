@@ -60,4 +60,3 @@ while ($i !== null) {
 */
 
 \Brainfuck\Interpreter::interpret($rootInstruction);
-//\Brainfuck\OldInterpreter::interpret($program);
