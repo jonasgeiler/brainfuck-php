@@ -6,6 +6,8 @@ An optimizing brainfuck parser & interpreter written in PHP.
 
 ## Usage
 ```bash
+$ composer install
+
 $ ./bin/bf ./examples/hello.bf
 Hello World!
 ```
