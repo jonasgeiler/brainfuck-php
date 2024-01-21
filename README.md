@@ -1,7 +1,14 @@
 # brainfuck-php
 An optimizing [brainfuck](https://en.wikipedia.org/wiki/Brainfuck) parser & interpreter written in PHP.
 
-> [!NOTE]
+This is a rework of a very old project of mine, which was actually the first 
+project I ever uploaded to GitHub!  
+If you want to see the old version, check out the 
+[`old-version`](https://github.com/skayo/brainfuck-php/tree/old-version)
+tag.  
+But be warned of the bad code :D
+
+> [!NOTE]  
 > Since this is just a little experiment, I won't go into too much detail about
 > how it works, how to use it, or what exactly it does. Feel free to 
 > [start a new discussion](https://github.com/skayo/brainfuck-php/discussions)
