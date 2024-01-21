@@ -10,8 +10,22 @@ class Parser {
 
 	/**
 	 * Parse a given brainfuck program.
+	 *
 	 * @param string $program The brainfuck program to parse.
-	 * @throws \Exception
+	 * @param string $opJumpRight The jump-right operator
+	 * @param string $opJumpLeft The jump-left operator
+	 * @param string $opAddIncrease The add-increase operator
+	 * @param string $opAddDecrease The add-decrease operator
+	 * @param string $opLoopStart The loop-start operator
+	 * @param string $opLoopEnd The loop-end operator
+	 * @param string $opOutput The output operator
+	 * @param string $opInput The input operator
+	 *
+	 * @return \Brainfuck\Instruction A root instruction if successful and a
+	 *
+	 * @throws \Brainfuck\Exceptions\UnmatchedLoopEndException
+	 * @throws \Brainfuck\Exceptions\UnmatchedLoopStartException
+	 * @throws \Brainfuck\Exceptions\InvalidProgramException
 	 */
 	static public function parse(
 		string &$program,
@@ -23,7 +37,7 @@ class Parser {
 		string $opLoopEnd = ']',
 		string $opOutput = '.',
 		string $opInput = ',',
-	): ?Instruction {
+	): Instruction {
 		$rootInstruction = new Instruction();
 
 		$programLength = strlen($program);
@@ -151,8 +165,8 @@ class Parser {
 
 		// Check if the root instruction is empty:
 		if ($rootInstruction->opcode === null) {
-			// This means there are no instructions at all, so just return null.
-			return null;
+			// This means there are no instructions at all, so error.
+			throw new Exceptions\InvalidProgramException();
 		}
 
 		// Check if the last instruction is an 'add 0' or 'jump 0' instruction:
@@ -165,8 +179,9 @@ class Parser {
 		) {
 			// Check if this is the first instruction in the linked list:
 			if ($instruction->previous === null) {
-				// Just return null since it's the first and last instruction.
-				return null;
+				// Throw error since it's the first and last instruction,
+				// meaning that there is no real program here.
+				throw new Exceptions\InvalidProgramException();
 			}
 
 			// Unset the next instruction of the previous instruction, which

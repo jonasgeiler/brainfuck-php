@@ -9,15 +9,27 @@ class Interpreter {
 
 	/**
 	 * Interpret a given brainfuck instruction linked list.
+	 *
 	 * @param \Brainfuck\Instruction $rootInstruction The start of the linked
 	 *     list.
+	 * @param \Brainfuck\Size $tapeSize The size of the tape/memory.
+	 * @param \Brainfuck\Size $cellSize The size of a cell in the tape/memory.
+	 * @param \Brainfuck\EofBehavior $eofBehavior How to handle EOF outputs.
+	 * @param false|resource $inputStream An input stream returned by fopen
+	 * @param false|resource $outputStream An output stream returned by fopen
+	 *
+	 * @throws \Brainfuck\Exceptions\InfiniteLoopException
+	 * @throws \Brainfuck\Exceptions\UnknownOpcodeException
+	 * @throws \Brainfuck\Exceptions\OutputFailedException
 	 */
 	static public function interpret(
 		Instruction $rootInstruction,
 		Size $tapeSize = Size::Bit16,
 		Size $cellSize = Size::Bit8,
 		EofBehavior $eofBehavior = EofBehavior::Ignore,
-	) {
+		$inputStream = STDIN,
+		$outputStream = STDOUT,
+	): void {
 		$tapeSize = $tapeSize->value;
 		$cellSize = $cellSize->value;
 
@@ -82,7 +94,7 @@ class Interpreter {
 					break;
 
 				case Opcode::Input:
-					$input = fgetc(STDIN);
+					$input = fgetc($inputStream);
 					if ($input === false) { // Input is EOF
 						if ($eofBehavior === EofBehavior::Ignore) {
 							break;
@@ -103,8 +115,8 @@ class Interpreter {
 					} else {
 						$output = chr($output);
 					}
-					if (fputs(STDOUT, $output) === false) {
-						throw new \Error('Output failed');
+					if (fputs($outputStream, $output) === false) {
+						throw new Exceptions\OutputFailedException();
 					}
 					break;
 
