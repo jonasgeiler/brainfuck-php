@@ -15,8 +15,8 @@ class Interpreter {
 	 * @param \Brainfuck\Size $tapeSize The size of the tape/memory.
 	 * @param \Brainfuck\Size $cellSize The size of a cell in the tape/memory.
 	 * @param \Brainfuck\EofBehavior $eofBehavior How to handle EOF outputs.
-	 * @param false|resource $inputStream An input stream returned by fopen
-	 * @param false|resource $outputStream An output stream returned by fopen
+	 * @param resource $inputStream An input stream returned by fopen
+	 * @param resource $outputStream An output stream returned by fopen
 	 *
 	 * @throws \Brainfuck\Exceptions\InfiniteLoopException
 	 * @throws \Brainfuck\Exceptions\UnknownOpcodeException
@@ -32,6 +32,13 @@ class Interpreter {
 	): void {
 		$tapeSize = $tapeSize->value;
 		$cellSize = $cellSize->value;
+
+		if (!is_resource($inputStream)) {
+			throw new Exceptions\InvalidInputStreamException();
+		}
+		if (!is_resource($outputStream)) {
+			throw new Exceptions\InvalidOutputStreamException();
+		}
 
 		// Execute the instructions
 		$instruction = $rootInstruction;
