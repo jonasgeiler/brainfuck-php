@@ -1,5 +1,5 @@
 # brainfuck-php
-An optimizing brainfuck parser & interpreter written in PHP.
+An optimizing [brainfuck](https://en.wikipedia.org/wiki/Brainfuck) parser & interpreter written in PHP.
 
 ## Requirements
 - PHP (cli) >= 8.2
