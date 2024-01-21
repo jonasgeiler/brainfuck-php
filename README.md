@@ -1,6 +1,11 @@
 # brainfuck-php
 An optimizing [brainfuck](https://en.wikipedia.org/wiki/Brainfuck) parser & interpreter written in PHP.
 
+> [!NOTE]
+> Since this is only a little experiment, I won't go into much detail here on
+> how it works, how to use it or what every part does. Feel free to create an 
+> issue if you have any questions!
+
 ## Requirements
 - PHP (cli) >= 8.2
 
