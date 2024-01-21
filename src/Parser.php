@@ -120,15 +120,18 @@ class Parser {
 								$instruction->match->previous !== null
 								&& $instruction->match->previous->opcode === Opcode::Add
 							) {
-								$instruction = $instruction->match->previous;
+								self::replaceInstruction(
+									$instruction,
+									$instruction->match->previous,
+									Opcode::Clear,
+								);
 							} else {
-								$instruction = $instruction->match;
+								self::replaceInstruction(
+									$instruction,
+									$instruction->match,
+									Opcode::Clear,
+								);
 							}
-
-							$instruction->opcode = Opcode::Clear;
-							$instruction->value = null;
-							$instruction->next = null;
-							$instruction->match = null;
 						} else if (
 							$instruction->previous->opcode === Opcode::Jump
 							&& $instruction->previous->value === 1
@@ -138,11 +141,11 @@ class Parser {
 							// - `[>]`: moves the pointer to the right until it
 							//          finds a cell with value 0.
 
-							$instruction = $instruction->match;
-							$instruction->opcode = Opcode::ScanRight;
-							$instruction->value = null;
-							$instruction->next = null;
-							$instruction->match = null;
+							self::replaceInstruction(
+								$instruction,
+								$instruction->match,
+								Opcode::ScanRight,
+							);
 						} else if (
 							$instruction->previous->opcode === Opcode::Jump
 							&& $instruction->previous->value === -1
@@ -152,11 +155,11 @@ class Parser {
 							// - `[<]`: moves the pointer to the left until it
 							//          finds a cell with value 0.
 
-							$instruction = $instruction->match;
-							$instruction->opcode = Opcode::ScanLeft;
-							$instruction->value = null;
-							$instruction->next = null;
-							$instruction->match = null;
+							self::replaceInstruction(
+								$instruction,
+								$instruction->match,
+								Opcode::ScanLeft,
+							);
 						}
 					} else if (
 						$instruction->match->next->opcode === Opcode::Add
@@ -196,11 +199,12 @@ class Parser {
 								&& $i->next === $instruction
 							) {
 								// This is the end of the copy loop
-								$instruction = $instruction->match;
-								$instruction->opcode = Opcode::Copy;
-								$instruction->value = $copies;
-								$instruction->next = null;
-								$instruction->match = null;
+								self::replaceInstruction(
+									$instruction,
+									$instruction->match,
+									Opcode::Copy,
+									$copies,
+								);
 								break;
 							} else {
 								// If none of the above conditions are met,
