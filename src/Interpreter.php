@@ -40,11 +40,11 @@ class Interpreter {
 		while ($instruction !== null) {
 			switch ($instruction->opcode) {
 				case Opcode::Jump:
-					if ($instruction->amount < 0) {
+					if ($instruction->value < 0) {
 						$tapePointer = (
 							(
 								$tapePointer
-								- (abs($instruction->amount) & $tapeSize)
+								- (abs($instruction->value) & $tapeSize)
 							)
 							& $tapeSize
 						);
@@ -52,7 +52,7 @@ class Interpreter {
 						$tapePointer = (
 							(
 								$tapePointer
-								+ ($instruction->amount & $tapeSize)
+								+ ($instruction->value & $tapeSize)
 							)
 							& $tapeSize
 						);
@@ -60,11 +60,11 @@ class Interpreter {
 					break;
 
 				case Opcode::Add:
-					if ($instruction->amount < 0) {
+					if ($instruction->value < 0) {
 						$tape[$tapePointer] = (
 							(
 								$tape[$tapePointer]
-								- (abs($instruction->amount) & $cellSize)
+								- (abs($instruction->value) & $cellSize)
 							)
 							& $cellSize
 						);
@@ -72,7 +72,7 @@ class Interpreter {
 						$tape[$tapePointer] = (
 							(
 								$tape[$tapePointer]
-								+ ($instruction->amount & $cellSize)
+								+ ($instruction->value & $cellSize)
 							)
 							& $cellSize
 						);
@@ -138,6 +138,55 @@ class Interpreter {
 					break;
 
 				case Opcode::Copy:
+					if ($tape[$tapePointer] !== 0) {
+						foreach ($instruction->value as $offset => $multiplier) {
+							if ($offset < 0) {
+								$tempTapePointer = (
+									(
+										$tapePointer
+										- (abs($offset) & $tapeSize)
+									)
+									& $tapeSize
+								);
+							} else {
+								$tempTapePointer = (
+									(
+										$tapePointer
+										+ ($offset & $tapeSize)
+									)
+									& $tapeSize
+								);
+							}
+
+							if ($multiplier < 0) {
+								$tape[$tempTapePointer] = (
+									(
+										$tape[$tempTapePointer]
+										- (
+											($tape[$tapePointer] * (abs($multiplier) & $cellSize))
+											& $cellSize
+										)
+									)
+									& $cellSize
+								);
+							} else {
+								$tape[$tempTapePointer] = (
+									(
+										$tape[$tempTapePointer]
+										+ (
+											($tape[$tapePointer] * ($multiplier & $cellSize))
+											& $cellSize
+										)
+									)
+									& $cellSize
+								);
+							}
+						}
+
+						$tape[$tapePointer] = 0;
+					}
+					break;
+
 				default:
 					throw new Exceptions\UnknownOpcodeException();
 			}

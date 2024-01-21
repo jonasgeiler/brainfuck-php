@@ -54,10 +54,10 @@ class Parser {
 					$amountDiff = $op === $opJumpRight ? 1 : -1;
 					if (
 						$instruction->opcode === Opcode::Jump
-						&& $instruction->amount + $amountDiff < PHP_INT_MAX
-						&& $instruction->amount + $amountDiff > PHP_INT_MIN + 1
+						&& $instruction->value + $amountDiff < PHP_INT_MAX
+						&& $instruction->value + $amountDiff > PHP_INT_MIN + 1
 					) {
-						$instruction->amount += $amountDiff;
+						$instruction->value += $amountDiff;
 					} else {
 						self::initInstruction(
 							$instruction,
@@ -74,10 +74,10 @@ class Parser {
 					$amountDiff = $op === $opAddIncrease ? 1 : -1;
 					if (
 						$instruction->opcode === Opcode::Add
-						&& $instruction->amount + $amountDiff < PHP_INT_MAX
-						&& $instruction->amount + $amountDiff > PHP_INT_MIN + 1
+						&& $instruction->value + $amountDiff < PHP_INT_MAX
+						&& $instruction->value + $amountDiff > PHP_INT_MIN + 1
 					) {
-						$instruction->amount += $amountDiff;
+						$instruction->value += $amountDiff;
 					} else {
 						self::initInstruction(
 							$instruction,
@@ -102,13 +102,20 @@ class Parser {
 					$instruction->match->match = $instruction;
 
 					if ($instruction->match === $instruction->previous->previous) {
+						// -> Try to detect clear or scan loops
+
 						if (
 							$instruction->previous->opcode === Opcode::Add
 							&& (
-								$instruction->previous->amount === 1
-								|| $instruction->previous->amount === -1
+								$instruction->previous->value === 1
+								|| $instruction->previous->value === -1
 							)
 						) {
+							// -> Clear loop detected
+							// Example clear loops:
+							// - `[-]`: set current cell to 0
+							// - `[+]`: set current cell to 0 but other way
+
 							if (
 								$instruction->match->previous !== null
 								&& $instruction->match->previous->opcode === Opcode::Add
@@ -119,31 +126,89 @@ class Parser {
 							}
 
 							$instruction->opcode = Opcode::Clear;
-							$instruction->amount = null;
+							$instruction->value = null;
 							$instruction->next = null;
 							$instruction->match = null;
 						} else if (
 							$instruction->previous->opcode === Opcode::Jump
-							&& $instruction->previous->amount === 1
+							&& $instruction->previous->value === 1
 						) {
+							// -> Scan right loop detected
+							// Example clear loops:
+							// - `[>]`: moves the pointer to the right until it
+							//          finds a cell with value 0.
+
 							$instruction = $instruction->match;
 							$instruction->opcode = Opcode::ScanRight;
-							$instruction->amount = null;
+							$instruction->value = null;
 							$instruction->next = null;
 							$instruction->match = null;
 						} else if (
 							$instruction->previous->opcode === Opcode::Jump
-							&& $instruction->previous->amount === -1
+							&& $instruction->previous->value === -1
 						) {
+							// -> Scan left loop detected
+							// Example clear loops:
+							// - `[<]`: moves the pointer to the left until it
+							//          finds a cell with value 0.
+
 							$instruction = $instruction->match;
 							$instruction->opcode = Opcode::ScanLeft;
-							$instruction->amount = null;
+							$instruction->value = null;
 							$instruction->next = null;
 							$instruction->match = null;
 						}
-					}
+					} else if (
+						$instruction->match->next->opcode === Opcode::Add
+						&& $instruction->match->next->value === -1
+					) {
+						// -> Start if copy loop detected
+						// Example copy loops:
+						// - `[->+<]`: add current cell to other cell
+						// - `[->-<]`: subtract current cell from other cell
+						// - `[->+<]`: move value to different cell
+						// - `[->+>+<<]`: copy value to multiple cells
+						// - `[->++<]`: multiply value by 2
+						// These copy loops always consist of the same parts:
+						// 1. ADD: Always starts with a single '-'
+						// 2. One or more of the following:
+						//   a. JUMP: Move n cells to left or right
+						//   b. ADD: Add or subtract from the cell
+						// 4. JUMP: Move back n cells to original position
 
-					// TODO: Detect copy loops? (eg. [->+<] ???)
+						// Try to detect the full copy loop:
+						$i = $instruction->match->next->next;
+						$offset = 0;
+						$copies = [];
+						while ($i !== null && $i !== $instruction) {
+							if (
+								$i->opcode === Opcode::Jump
+								&& $i->next->opcode === Opcode::Add
+							) {
+								// This is one of the copy loop "moves"
+								$offset += $i->value;
+								// TODO: $offset int overflow check
+								$copies[$offset] = $i->next->value;
+								$i = $i->next->next; // Continue after the "move"
+							} else if (
+								$i->opcode === Opcode::Jump
+								&& $i->value === -$offset
+								&& $i->next === $instruction
+							) {
+								// This is the end of the copy loop
+								$instruction = $instruction->match;
+								$instruction->opcode = Opcode::Copy;
+								$instruction->value = $copies;
+								$instruction->next = null;
+								$instruction->match = null;
+								break;
+							} else {
+								// If none of the above conditions are met,
+								// then this is not a copy loop.
+								break;
+							}
+						}
+					}
 					break;
 
 				case $opOutput:
@@ -175,7 +240,7 @@ class Parser {
 				$instruction->opcode === Opcode::Jump
 				|| $instruction->opcode === Opcode::Add
 			)
-			&& $instruction->amount === 0
+			&& $instruction->value === 0
 		) {
 			// Check if this is the first instruction in the linked list:
 			if ($instruction->previous === null) {
@@ -196,7 +261,7 @@ class Parser {
 		Instruction &$instruction,
 	) {
 		if (
-			$instruction->amount === 0
+			$instruction->value === 0
 			&& (
 				(
 					$instruction->opcode === Opcode::Jump
@@ -218,7 +283,7 @@ class Parser {
 	protected static function initInstruction(
 		Instruction &$instruction,
 		Opcode $opcode,
-		?int $amount = null,
+		int|array|null $value = null,
 	): void {
 		if (
 			// Only create the next instruction if the current
@@ -232,7 +297,7 @@ class Parser {
 					$instruction->opcode !== Opcode::Jump
 					&& $instruction->opcode !== Opcode::Add
 				)
-				|| $instruction->amount !== 0
+				|| $instruction->value !== 0
 			)
 		) {
 			// Create the next instruction
@@ -242,6 +307,19 @@ class Parser {
 		}
 
 		$instruction->opcode = $opcode;
-		$instruction->amount = $amount;
+		$instruction->value = $value;
+	}
+
+	protected static function replaceInstruction(
+		Instruction &$instruction,
+		Instruction $newInstruction,
+		Opcode $opcode,
+		int|array|null $value = null,
+	): void {
+		$instruction = $newInstruction;
+		$instruction->opcode = $opcode;
+		$instruction->value = $value;
+		$instruction->next = null;
+		$instruction->match = null;
 	}
 }

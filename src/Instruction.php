@@ -15,7 +15,7 @@ class Instruction {
 	/**
 	 * For the Jump and Add opcodes, this holds the amount to jump/increase.
 	 */
-	public ?int $amount = null;
+	public int|array|null $value = null;
 
 	/**
 	 * This holds the next instruction in the program.
@@ -39,8 +39,8 @@ class Instruction {
 	 */
 	public function __toString(): string {
 		$result = strtolower($this->opcode->name);
-		if ($this->amount) {
-			$result .= ' ' . $this->amount;
+		if ($this->value) {
+			$result .= ' ' . $this->value;
 		}
 		if ($this->match) {
 			$result .=

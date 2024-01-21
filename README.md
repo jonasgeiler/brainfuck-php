@@ -44,19 +44,16 @@ real    0m15,726s
 user    0m15,665s
 sys     0m0,052s
 
+
+# After adding copy opcode
+$ time ./bin/bf ./examples/hanoi.bf
+real    0m15,946s
+user    0m15,881s
+sys     0m0,056s
+
+$ time php -dopcache.enable_cli=1 -dopcache.jit_buffer_size=100M -dopcache.jit=1255 ./bin/bf ./examples/hanoi.bf
+real    0m9,347s
+user    0m9,296s
+sys     0m0,040s
+
 ```
-
-## What is a copy loop?
-
-Use cases:
-- `[->+<]`: add two cells
-- `[->-<]`: subtract two cells
-- `[->+<]`: move value to different cell
-- `[->+>+<<]`: copy value to multiple cells
-
-These copy loops always consist of the same parts:
-1. Always starts with '-'
-2. Move n cells to left or right
-3. Add or subtract 1 from the cell
-4. Move back n cells to original position
-(Step 2 and 3 is repeatable for multiple copies)

@@ -46,7 +46,7 @@ if (!defined('COMPOSER_AUTOLOAD_PATH')) {
 require COMPOSER_AUTOLOAD_PATH;
 
 $program = file_get_contents($argv[1]);
-//$program = '++[->-<]';
+//$program = '>++++[-<++>>+<]';
 
 $rootInstruction = \Brainfuck\Parser::parse($program);
 
