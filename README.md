@@ -2,15 +2,19 @@
 An optimizing brainfuck parser & interpreter written in PHP.
 
 ## Requirements
-- PHP >= 8.2
+- PHP (cli) >= 8.2
 
 ## Usage
 ```bash
 $ ./bin/bf ./examples/hello.bf
 Hello World!
 ```
+Feel free to check out all other example programs I have uploaded!  
+For example `lost-kingdom.bf` is pretty fun :)
 
 ## Benchmarks
+As far as I can see, this is one of, if not *the* fastest PHP brainfuck
+parser & interpreter around:
 ```shell
 
 $ php -v
