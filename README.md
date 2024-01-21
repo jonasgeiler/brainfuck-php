@@ -2,9 +2,10 @@
 An optimizing [brainfuck](https://en.wikipedia.org/wiki/Brainfuck) parser & interpreter written in PHP.
 
 > [!NOTE]
-> Since this is only a little experiment, I won't go into much detail here on
-> how it works, how to use it or what every part does. Feel free to create an 
-> issue if you have any questions!
+> Since this is just a little experiment, I won't go into too much detail about
+> how it works, how to use it, or what exactly it does. Feel free to 
+> [start a new discussion](https://github.com/skayo/brainfuck-php/discussions)
+> if you have any questions!
 
 ## Requirements
 - PHP (cli) >= 8.2
@@ -17,7 +18,7 @@ $ ./bin/bf ./examples/hello.bf
 Hello World!
 ```
 Feel free to check out all other example programs I have uploaded!  
-For example `lost-kingdom.bf` is pretty fun :)
+For example [`lost-kingdom.bf`](./examples/lost-kingdom.bf) is pretty fun :)
 
 ## Benchmarks
 As far as I can see, this is one of, if not *the* fastest PHP brainfuck
@@ -67,7 +68,7 @@ user    0m9,296s
 sys     0m0,040s
 
 ```
-If the above is not clear: the `./examples/hanoi.bf` brainfuck program only
-takes **9 seconds** to run on my machine, which is pretty fast compared to where 
-this project started at and compared to other PHP brainfuck parsers & interpreters 
-I could find on the internet!
+If the above is not clear: the [`hanoi.bf`](./examples/hanoi.bf) brainfuck 
+program only takes **9 seconds** to run on my machine, which is pretty fast
+compared to where this project started at (7 whole minutes) and compared to 
+other PHP brainfuck parsers & interpreters I could find on the internet!
