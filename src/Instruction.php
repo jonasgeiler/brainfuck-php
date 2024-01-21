@@ -39,7 +39,9 @@ class Instruction {
 	 */
 	public function __toString(): string {
 		$result = strtolower($this->opcode->name);
-		if ($this->value) {
+		if (is_array($this->value)) {
+			$result .= ' ' . json_encode($this->value);
+		} else {
 			$result .= ' ' . $this->value;
 		}
 		if ($this->match) {

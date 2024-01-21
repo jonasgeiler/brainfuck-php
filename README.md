@@ -1,5 +1,5 @@
 # brainfuck-php
-A brainfuck interpreter written in PHP.
+An optimizing brainfuck parser & interpreter written in PHP.
 
 ## Requirements
 - PHP >= 8.2
@@ -11,7 +11,6 @@ Hello World!
 ```
 
 ## Benchmarks
-
 ```shell
 
 $ php -v
