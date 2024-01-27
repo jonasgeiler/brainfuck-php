@@ -15,7 +15,7 @@ But be warned of the bad code :D
 > if you have any questions!
 
 ## Requirements
-- PHP (cli) >= 8.2
+- PHP 8.2
 
 ## Usage
 ```bash
