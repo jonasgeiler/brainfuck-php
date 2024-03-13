@@ -114,7 +114,7 @@ class Parser {
 							// -> Clear loop detected
 							// Example clear loops:
 							// - `[-]`: set current cell to 0
-							// - `[+]`: set current cell to 0 but other way
+							// - `[+]`: set current cell to 0 but the other way
 
 							if (
 								$instruction->match->previous !== null
@@ -137,7 +137,7 @@ class Parser {
 							&& $instruction->previous->value === 1
 						) {
 							// -> Scan right loop detected
-							// Example clear loops:
+							// Example scan right loops:
 							// - `[>]`: moves the pointer to the right until it
 							//          finds a cell with value 0.
 
@@ -151,7 +151,7 @@ class Parser {
 							&& $instruction->previous->value === -1
 						) {
 							// -> Scan left loop detected
-							// Example clear loops:
+							// Example scan left loops:
 							// - `[<]`: moves the pointer to the left until it
 							//          finds a cell with value 0.
 
