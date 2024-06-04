@@ -14,7 +14,7 @@ to improve the performance of the Brainfuck program execution.
 This is a rework of a very old project of mine, which was actually the first 
 project I ever uploaded to GitHub!  
 If you want to see the old version, check out the 
-[`old-version`](https://github.com/skayo/brainfuck-php/tree/old-version)
+[`old-version`](https://github.com/jonasgeiler/brainfuck-php/tree/old-version)
 tag.  
 But be warned of the bad and slow code :D
 
