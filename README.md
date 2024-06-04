@@ -5,7 +5,7 @@
 
 Brainfuck is an extremly minimal, esoteric programming language consisting of
 only eight simple commands, a data pointer and an instruction pointer.
-Read more about brainfuck here:
+Read more about Brainfuck here:
 [Brainfuck - Wikipedia](https://en.wikipedia.org/wiki/Brainfuck)  
 This project is essentially a parser & interpreter for this programming
 language. The term "optimizing" means that I use special optimization techniques
@@ -16,7 +16,7 @@ project I ever uploaded to GitHub!
 If you want to see the old version, check out the 
 [`old-version`](https://github.com/skayo/brainfuck-php/tree/old-version)
 tag.  
-But be warned of the bad code :D
+But be warned of the bad and slow code :D
 
 ## Requirements
 
@@ -42,7 +42,8 @@ For example, [`lost-kingdom.bf`](./examples/lost-kingdom.bf) is pretty fun:
 $ ./bin/bf ./examples/lost-kingdom.bf
 ```
 
-Make sure to check out all the other example programs I have uploaded!  
+Make sure to check out all the other [example programs](./examples)
+I have uploaded!  
 
 ## Benchmarks
 
