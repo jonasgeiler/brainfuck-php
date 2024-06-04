@@ -1,6 +1,6 @@
 {
     "name": "jonasgeiler/brainfuck",
-    "description": "A brainfuck interpreter written in PHP",
+    "description": "An optimizing Brainfuck parser & interpreter written in PHP",
     "type": "project",
     "homepage": "https://github.com/jonasgeiler/brainfuck-php#readme",
     "license": "MIT",
@@ -29,7 +29,8 @@
     "keywords": [
         "experiment",
         "brainfuck",
-        "interpreter",
-        "brainfuck-interpreter"
+        "brainfuck-parser",
+        "brainfuck-interpreter",
+        "brainfuck-optimizer"
     ]
 }
