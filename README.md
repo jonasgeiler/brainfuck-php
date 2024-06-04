@@ -1,5 +1,15 @@
 # brainfuck-php
-An optimizing [brainfuck](https://en.wikipedia.org/wiki/Brainfuck) parser & interpreter written in PHP.
+
+> An optimizing [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) parser &
+> interpreter written in PHP.
+
+Brainfuck is an extremly minimal, esoteric programming language consisting of
+only eight simple commands, a data pointer and an instruction pointer.
+Read more about brainfuck here:
+[Brainfuck - Wikipedia](https://en.wikipedia.org/wiki/Brainfuck)  
+This project is essentially a parser & interpreter for this programming
+language. The term "optimizing" means that I use special optimization techniques
+to improve the performance of the Brainfuck program execution.
 
 This is a rework of a very old project of mine, which was actually the first 
 project I ever uploaded to GitHub!  
@@ -8,62 +18,44 @@ If you want to see the old version, check out the
 tag.  
 But be warned of the bad code :D
 
-> [!NOTE]  
-> Since this is just a little experiment, I won't go into too much detail about
-> how it works, how to use it, or what exactly it does. Feel free to 
-> [start a new discussion](https://github.com/skayo/brainfuck-php/discussions)
-> if you have any questions!
-
 ## Requirements
+
 - PHP 8.2 or newer
 
-## Usage
-```bash
-$ composer install
+## How to try
 
-$ ./bin/bf ./examples/hello.bf
-Hello World!
+Download the repository and then run `composer` to set up the autoloader:
+
+```shell
+$ composer install
 ```
-Feel free to check out all other example programs I have uploaded!  
-For example [`lost-kingdom.bf`](./examples/lost-kingdom.bf) is pretty fun :)
+
+Afterwards, run any of the examples using `./bin/bf`:
+
+```shell
+$ ./bin/bf ./examples/<example>.bf
+```
+
+For example, [`lost-kingdom.bf`](./examples/lost-kingdom.bf) is pretty fun:
+
+```shell
+$ ./bin/bf ./examples/lost-kingdom.bf
+```
+
+Make sure to check out all the other example programs I have uploaded!  
 
 ## Benchmarks
-As far as I can see, this is one of, if not *the* fastest PHP brainfuck
-parser & interpreter around:
-```shell
 
+As far as I can see, this is one of, if not __*THE*__ fastest PHP Brainfuck
+parser & interpreter around:
+
+```shell
 $ php -v
 PHP 8.2.14 (cli) (built: Dec 21 2023 20:19:23) (NTS)
 Copyright (c) The PHP Group
 Zend Engine v4.2.14, Copyright (c) Zend Technologies
     with Zend OPcache v8.2.14, Copyright (c), by Zend Technologies
 
-
-# With only basic optimization like merging consecutive operators together:
-$ time ./bin/bf ./examples/hanoi.bf
-real    6m46,842s
-user    6m46,457s
-sys     0m0,144s
-
-$ time php -dopcache.enable_cli=1 -dopcache.jit_buffer_size=100M -dopcache.jit=1255 ./bin/bf ./examples/hanoi.bf
-real    3m25,252s
-user    3m25,067s
-sys     0m0,044s
-
-
-# After adding the scan and clear opcodes:
-$ time ./bin/bf ./examples/hanoi.bf
-real    0m28,194s
-user    0m28,132s
-sys     0m0,036s
-
-$ time php -dopcache.enable_cli=1 -dopcache.jit_buffer_size=100M -dopcache.jit=1255 ./bin/bf ./examples/hanoi.bf
-real    0m15,726s
-user    0m15,665s
-sys     0m0,052s
-
-
-# After adding the copy opcode:
 $ time ./bin/bf ./examples/hanoi.bf
 real    0m15,946s
 user    0m15,881s
@@ -73,9 +65,9 @@ $ time php -dopcache.enable_cli=1 -dopcache.jit_buffer_size=100M -dopcache.jit=1
 real    0m9,347s
 user    0m9,296s
 sys     0m0,040s
-
 ```
-If the above is not clear: the [`hanoi.bf`](./examples/hanoi.bf) brainfuck 
-program only takes **9 seconds** to run on my machine, which is pretty fast
-compared to where this project started at (7 whole minutes) and compared to 
-other PHP brainfuck parsers & interpreters I could find on the internet!
+
+As you can see, the [`hanoi.bf`](./examples/hanoi.bf) Brainfuck program only
+takes **9 seconds** to run on my machine, which is pretty damn fast compared
+to where this project started at (7 whole minutes) and compared to other PHP
+Brainfuck parsers & interpreters I could find on the internet!
