@@ -14,6 +14,7 @@ class Instruction {
 
 	/**
 	 * For the Jump and Add opcodes, this holds the amount to jump/increase.
+	 * For the Copy opcode, this holds an array with the keys being the offsets and the values being the multipliers.
 	 */
 	public int|array|null $value = null;
 
